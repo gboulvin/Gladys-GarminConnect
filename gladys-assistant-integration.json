@@ -1,0 +1,1232 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Garmin Connect",
+  "description": {
+    "en": "Garmin watches, scales and health data (steps, sleep, Body Battery) in Gladys.",
+    "fr": "Montres, balances et données santé Garmin (pas, sommeil, Body Battery) dans Gladys.",
+    "de": "Garmin-Uhren, -Waagen und Gesundheitsdaten (Schritte, Schlaf, Body Battery) in Gladys.",
+    "es": "Relojes, básculas y datos de salud Garmin (pasos, sueño, Body Battery) en Gladys."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/gboulvin/gladys-garminconnect:1.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/gboulvin/Gladys-GarminConnect/main/cover.png",
+  "categories": ["services", "environment"],
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Your Garmin Connect account",
+        "fr": "Votre compte Garmin Connect",
+        "de": "Ihr Garmin Connect-Konto",
+        "es": "Su cuenta Garmin Connect"
+      },
+      "description": {
+        "en": "Enter the credentials of your Garmin Connect account. Garmin offers no public API to individuals: the integration signs in like the Garmin Connect app and only reads your data. With two-step verification, save, then run the \"Sign in\" action twice: once to receive the code, once with the code.",
+        "fr": "Saisissez les identifiants de votre compte Garmin Connect. Garmin ne propose pas d’API publique aux particuliers : l’intégration se connecte comme l’application Garmin Connect et ne fait que lire vos données. Avec la vérification en deux étapes, enregistrez puis lancez deux fois l’action « Se connecter » : une fois pour recevoir le code, une fois avec le code.",
+        "de": "Geben Sie die Zugangsdaten Ihres Garmin Connect-Kontos ein. Garmin bietet Privatpersonen keine öffentliche API: Die Integration meldet sich wie die Garmin Connect-App an und liest Ihre Daten nur. Mit Zwei-Faktor-Verifizierung speichern Sie und führen die Aktion „Anmelden“ zweimal aus: einmal, um den Code zu erhalten, einmal mit dem Code.",
+        "es": "Introduzca las credenciales de su cuenta Garmin Connect. Garmin no ofrece API pública a particulares: la integración inicia sesión como la aplicación Garmin Connect y solo lee sus datos. Con la verificación en dos pasos, guarde y ejecute dos veces la acción «Iniciar sesión»: una para recibir el código y otra con el código."
+      },
+      "links": [
+        {
+          "url": "https://connect.garmin.com/",
+          "label": {
+            "en": "Garmin Connect",
+            "fr": "Garmin Connect",
+            "de": "Garmin Connect",
+            "es": "Garmin Connect"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email",
+      "type": "string",
+      "label": {
+        "en": "Email",
+        "fr": "E-mail",
+        "de": "E-Mail",
+        "es": "Correo electrónico"
+      },
+      "placeholder": {
+        "en": "e.g. name@example.com",
+        "fr": "ex. nom@exemple.fr",
+        "de": "z. B. name@beispiel.de",
+        "es": "p. ej. nombre@ejemplo.es"
+      },
+      "required": true
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Only sent to Garmin to sign in; the session is then kept in the integration volume.",
+        "fr": "Envoyé uniquement à Garmin pour se connecter ; la session est ensuite conservée dans le volume de l’intégration.",
+        "de": "Wird nur zur Anmeldung an Garmin gesendet; die Sitzung wird danach im Volume der Integration gespeichert.",
+        "es": "Solo se envía a Garmin para iniciar sesión; después la sesión se guarda en el volumen de la integración."
+      },
+      "required": true
+    },
+    {
+      "key": "domain",
+      "type": "select",
+      "label": {
+        "en": "Garmin region",
+        "fr": "Région Garmin",
+        "de": "Garmin-Region",
+        "es": "Región de Garmin"
+      },
+      "required": false,
+      "default": "garmin.com",
+      "options": [
+        {
+          "value": "garmin.com",
+          "label": {
+            "en": "International (garmin.com)",
+            "fr": "International (garmin.com)",
+            "de": "International (garmin.com)",
+            "es": "Internacional (garmin.com)"
+          }
+        },
+        {
+          "value": "garmin.cn",
+          "label": {
+            "en": "China (garmin.cn)",
+            "fr": "Chine (garmin.cn)",
+            "de": "China (garmin.cn)",
+            "es": "China (garmin.cn)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "timezone",
+      "type": "string",
+      "label": {
+        "en": "Time zone",
+        "fr": "Fuseau horaire",
+        "de": "Zeitzone",
+        "es": "Zona horaria"
+      },
+      "description": {
+        "en": "Time zone of your Garmin account, to know which day \"today\" is.",
+        "fr": "Fuseau horaire de votre compte Garmin, pour savoir quel jour est « aujourd’hui ».",
+        "de": "Zeitzone Ihres Garmin-Kontos, um zu wissen, welcher Tag „heute“ ist.",
+        "es": "Zona horaria de su cuenta Garmin, para saber qué día es «hoy»."
+      },
+      "placeholder": {
+        "en": "e.g. Europe/Paris",
+        "fr": "ex. Europe/Paris",
+        "de": "z. B. Europe/Berlin",
+        "es": "p. ej. Europe/Madrid"
+      },
+      "required": false,
+      "default": "Europe/Paris"
+    },
+    {
+      "key": "poll_frequency",
+      "type": "number",
+      "label": {
+        "en": "Synchronization interval (s)",
+        "fr": "Intervalle de synchronisation (s)",
+        "de": "Synchronisierungsintervall (s)",
+        "es": "Intervalo de sincronización (s)"
+      },
+      "description": {
+        "en": "How often Garmin Connect is read, in seconds (5 minutes minimum: Garmin limits its API).",
+        "fr": "Fréquence de lecture de Garmin Connect, en secondes (5 minutes minimum : Garmin limite son API).",
+        "de": "Wie oft Garmin Connect gelesen wird, in Sekunden (mindestens 5 Minuten: Garmin begrenzt seine API).",
+        "es": "Frecuencia de lectura de Garmin Connect, en segundos (5 minutos mínimo: Garmin limita su API)."
+      },
+      "required": false,
+      "default": 900,
+      "min": 300,
+      "max": 86400
+    },
+    {
+      "key": "body_battery_low_threshold",
+      "type": "number",
+      "label": {
+        "en": "Low Body Battery threshold",
+        "fr": "Seuil de Body Battery faible",
+        "de": "Schwelle für niedrige Body Battery",
+        "es": "Umbral de Body Battery baja"
+      },
+      "description": {
+        "en": "The \"Body Battery low\" scene trigger fires when the level drops below this value.",
+        "fr": "Le déclencheur de scène « Body Battery faible » se déclenche quand le niveau passe sous cette valeur.",
+        "de": "Der Szenenauslöser „Body Battery niedrig“ wird ausgelöst, wenn der Wert unter diese Schwelle fällt.",
+        "es": "El disparador de escena «Body Battery baja» se activa cuando el nivel baja de este valor."
+      },
+      "required": false,
+      "default": 20,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "key": "device_language",
+      "type": "select",
+      "label": {
+        "en": "Language of device names",
+        "fr": "Langue des noms d’appareils",
+        "de": "Sprache der Gerätenamen",
+        "es": "Idioma de los nombres de dispositivos"
+      },
+      "description": {
+        "en": "Language of the device and feature names created in Gladys.",
+        "fr": "Langue des noms d’appareils et de fonctionnalités créés dans Gladys.",
+        "de": "Sprache der in Gladys erstellten Geräte- und Funktionsnamen.",
+        "es": "Idioma de los nombres de dispositivos y funciones creados en Gladys."
+      },
+      "required": false,
+      "default": "en",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "key": "sign_in",
+      "label": {
+        "en": "Sign in",
+        "fr": "Se connecter",
+        "de": "Anmelden",
+        "es": "Iniciar sesión"
+      },
+      "timeout_seconds": 90,
+      "fields": [
+        {
+          "key": "mfa_code",
+          "type": "string",
+          "label": {
+            "en": "Verification code (if requested)",
+            "fr": "Code de vérification (si demandé)",
+            "de": "Bestätigungscode (falls angefordert)",
+            "es": "Código de verificación (si se solicita)"
+          },
+          "placeholder": {
+            "en": "e.g. 123456",
+            "fr": "ex. 123456",
+            "de": "z. B. 123456",
+            "es": "p. ej. 123456"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 60
+    },
+    {
+      "key": "sync_now",
+      "label": {
+        "en": "Synchronize now",
+        "fr": "Synchroniser maintenant",
+        "de": "Jetzt synchronisieren",
+        "es": "Sincronizar ahora"
+      },
+      "timeout_seconds": 60
+    },
+    {
+      "key": "sign_out",
+      "label": {
+        "en": "Sign out",
+        "fr": "Se déconnecter",
+        "de": "Abmelden",
+        "es": "Cerrar sesión"
+      }
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "activity_completed",
+      "label": {
+        "en": "Garmin activity completed",
+        "fr": "Activité Garmin terminée",
+        "de": "Garmin-Aktivität beendet",
+        "es": "Actividad Garmin completada"
+      },
+      "description": {
+        "en": "A new activity (run, ride, walk...) was synced to Garmin Connect.",
+        "fr": "Une nouvelle activité (course, vélo, marche...) a été synchronisée sur Garmin Connect.",
+        "de": "Eine neue Aktivität (Lauf, Radfahrt, Spaziergang...) wurde mit Garmin Connect synchronisiert.",
+        "es": "Se sincronizó una nueva actividad (carrera, bici, caminata...) en Garmin Connect."
+      },
+      "fields": [
+        {
+          "key": "activity_type",
+          "type": "multi_select",
+          "label": {
+            "en": "Activity type",
+            "fr": "Type d'activité",
+            "de": "Aktivitätstyp",
+            "es": "Tipo de actividad"
+          },
+          "options": [
+            {
+              "value": "running",
+              "label": {
+                "en": "Running",
+                "fr": "Course à pied",
+                "de": "Laufen",
+                "es": "Carrera"
+              }
+            },
+            {
+              "value": "cycling",
+              "label": {
+                "en": "Cycling",
+                "fr": "Vélo",
+                "de": "Radfahren",
+                "es": "Ciclismo"
+              }
+            },
+            {
+              "value": "walking",
+              "label": {
+                "en": "Walking",
+                "fr": "Marche",
+                "de": "Gehen",
+                "es": "Caminata"
+              }
+            },
+            {
+              "value": "hiking",
+              "label": {
+                "en": "Hiking",
+                "fr": "Randonnée",
+                "de": "Wandern",
+                "es": "Senderismo"
+              }
+            },
+            {
+              "value": "swimming",
+              "label": {
+                "en": "Swimming",
+                "fr": "Natation",
+                "de": "Schwimmen",
+                "es": "Natación"
+              }
+            },
+            {
+              "value": "strength",
+              "label": {
+                "en": "Strength training",
+                "fr": "Renforcement musculaire",
+                "de": "Krafttraining",
+                "es": "Entrenamiento de fuerza"
+              }
+            },
+            {
+              "value": "other",
+              "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "de": "Andere",
+                "es": "Otra"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "activity_type",
+          "type": "string",
+          "label": {
+            "en": "Activity type",
+            "fr": "Type d'activité",
+            "de": "Aktivitätstyp",
+            "es": "Tipo de actividad"
+          }
+        },
+        {
+          "key": "activity_name",
+          "type": "string",
+          "label": {
+            "en": "Activity name",
+            "fr": "Nom de l'activité",
+            "de": "Name der Aktivität",
+            "es": "Nombre de la actividad"
+          }
+        },
+        {
+          "key": "distance_km",
+          "type": "number",
+          "label": {
+            "en": "Distance (km)",
+            "fr": "Distance (km)",
+            "de": "Distanz (km)",
+            "es": "Distancia (km)"
+          }
+        },
+        {
+          "key": "duration_minutes",
+          "type": "number",
+          "label": {
+            "en": "Duration (min)",
+            "fr": "Durée (min)",
+            "de": "Dauer (min)",
+            "es": "Duración (min)"
+          }
+        },
+        {
+          "key": "calories",
+          "type": "number",
+          "label": {
+            "en": "Calories",
+            "fr": "Calories",
+            "de": "Kalorien",
+            "es": "Calorías"
+          }
+        },
+        {
+          "key": "average_hr",
+          "type": "number",
+          "label": {
+            "en": "Average heart rate",
+            "fr": "Fréquence cardiaque moyenne",
+            "de": "Durchschnittliche Herzfrequenz",
+            "es": "Frecuencia cardíaca media"
+          }
+        }
+      ]
+    },
+    {
+      "key": "step_goal_reached",
+      "label": {
+        "en": "Daily step goal reached",
+        "fr": "Objectif de pas quotidien atteint",
+        "de": "Tägliches Schrittziel erreicht",
+        "es": "Objetivo diario de pasos alcanzado"
+      },
+      "description": {
+        "en": "The steps of the day reached the goal set in Garmin Connect (once a day).",
+        "fr": "Les pas du jour ont atteint l’objectif fixé dans Garmin Connect (une fois par jour).",
+        "de": "Die Schritte des Tages haben das in Garmin Connect festgelegte Ziel erreicht (einmal täglich).",
+        "es": "Los pasos del día alcanzaron el objetivo fijado en Garmin Connect (una vez al día)."
+      },
+      "variables": [
+        {
+          "key": "steps",
+          "type": "number",
+          "label": {
+            "en": "Steps",
+            "fr": "Pas",
+            "de": "Schritte",
+            "es": "Pasos"
+          }
+        },
+        {
+          "key": "step_goal",
+          "type": "number",
+          "label": {
+            "en": "Step goal",
+            "fr": "Objectif de pas",
+            "de": "Schrittziel",
+            "es": "Objetivo de pasos"
+          }
+        }
+      ]
+    },
+    {
+      "key": "body_battery_low",
+      "label": {
+        "en": "Body Battery low",
+        "fr": "Body Battery faible",
+        "de": "Body Battery niedrig",
+        "es": "Body Battery baja"
+      },
+      "description": {
+        "en": "The Body Battery dropped below the threshold of the configuration.",
+        "fr": "La Body Battery est passée sous le seuil de la configuration.",
+        "de": "Die Body Battery ist unter die Schwelle der Konfiguration gefallen.",
+        "es": "La Body Battery bajó del umbral de la configuración."
+      },
+      "variables": [
+        {
+          "key": "body_battery",
+          "type": "number",
+          "label": {
+            "en": "Body Battery",
+            "fr": "Body Battery",
+            "de": "Body Battery",
+            "es": "Body Battery"
+          }
+        },
+        {
+          "key": "threshold",
+          "type": "number",
+          "label": {
+            "en": "Threshold",
+            "fr": "Seuil",
+            "de": "Schwelle",
+            "es": "Umbral"
+          }
+        }
+      ]
+    },
+    {
+      "key": "sleep_recorded",
+      "label": {
+        "en": "Night of sleep recorded",
+        "fr": "Nuit de sommeil enregistrée",
+        "de": "Schlafnacht aufgezeichnet",
+        "es": "Noche de sueño registrada"
+      },
+      "description": {
+        "en": "Last night’s sleep reached Garmin Connect (usually when the watch syncs in the morning).",
+        "fr": "La nuit de sommeil est arrivée sur Garmin Connect (en général à la synchro du matin).",
+        "de": "Der Schlaf der letzten Nacht ist in Garmin Connect angekommen (meist bei der Synchronisierung am Morgen).",
+        "es": "El sueño de anoche llegó a Garmin Connect (normalmente al sincronizar por la mañana)."
+      },
+      "variables": [
+        {
+          "key": "sleep_hours",
+          "type": "number",
+          "label": {
+            "en": "Sleep duration (h)",
+            "fr": "Durée de sommeil (h)",
+            "de": "Schlafdauer (h)",
+            "es": "Duración del sueño (h)"
+          }
+        },
+        {
+          "key": "sleep_score",
+          "type": "number",
+          "label": {
+            "en": "Sleep score",
+            "fr": "Score de sommeil",
+            "de": "Schlafwert",
+            "es": "Puntuación del sueño"
+          }
+        }
+      ]
+    },
+    {
+      "key": "weigh_in_recorded",
+      "label": {
+        "en": "New weigh-in",
+        "fr": "Nouvelle pesée",
+        "de": "Neue Wiegung",
+        "es": "Nuevo pesaje"
+      },
+      "description": {
+        "en": "A new weigh-in (Index scale or manual entry) reached Garmin Connect.",
+        "fr": "Une nouvelle pesée (balance Index ou saisie manuelle) est arrivée sur Garmin Connect.",
+        "de": "Eine neue Wiegung (Index-Waage oder manuelle Eingabe) ist in Garmin Connect angekommen.",
+        "es": "Un nuevo pesaje (báscula Index o entrada manual) llegó a Garmin Connect."
+      },
+      "variables": [
+        {
+          "key": "weight_kg",
+          "type": "number",
+          "label": {
+            "en": "Weight (kg)",
+            "fr": "Poids (kg)",
+            "de": "Gewicht (kg)",
+            "es": "Peso (kg)"
+          }
+        },
+        {
+          "key": "body_fat",
+          "type": "number",
+          "label": {
+            "en": "Body fat (%)",
+            "fr": "Masse grasse (%)",
+            "de": "Körperfett (%)",
+            "es": "Grasa corporal (%)"
+          }
+        },
+        {
+          "key": "bmi",
+          "type": "number",
+          "label": {
+            "en": "BMI",
+            "fr": "IMC",
+            "de": "BMI",
+            "es": "IMC"
+          }
+        }
+      ]
+    },
+    {
+      "key": "device_synced",
+      "label": {
+        "en": "Garmin device synced",
+        "fr": "Appareil Garmin synchronisé",
+        "de": "Garmin-Gerät synchronisiert",
+        "es": "Dispositivo Garmin sincronizado"
+      },
+      "description": {
+        "en": "A Garmin device uploaded its data to Garmin Connect.",
+        "fr": "Un appareil Garmin a envoyé ses données sur Garmin Connect.",
+        "de": "Ein Garmin-Gerät hat seine Daten an Garmin Connect übertragen.",
+        "es": "Un dispositivo Garmin subió sus datos a Garmin Connect."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Device name",
+            "fr": "Nom de l'appareil",
+            "de": "Gerätename",
+            "es": "Nombre del dispositivo"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "sync_now",
+      "label": {
+        "en": "Synchronize Garmin Connect",
+        "fr": "Synchroniser Garmin Connect",
+        "de": "Garmin Connect synchronisieren",
+        "es": "Sincronizar Garmin Connect"
+      },
+      "description": {
+        "en": "Read Garmin Connect now and update the devices.",
+        "fr": "Interroge Garmin Connect maintenant et met à jour les appareils.",
+        "de": "Garmin Connect jetzt abfragen und die Geräte aktualisieren.",
+        "es": "Consulta Garmin Connect ahora y actualiza los dispositivos."
+      },
+      "timeout_seconds": 60,
+      "outputs": [
+        {
+          "key": "synced",
+          "type": "boolean",
+          "label": {
+            "en": "Synchronized",
+            "fr": "Synchronisé",
+            "de": "Synchronisiert",
+            "es": "Sincronizado"
+          }
+        },
+        {
+          "key": "steps",
+          "type": "number",
+          "label": {
+            "en": "Steps",
+            "fr": "Pas",
+            "de": "Schritte",
+            "es": "Pasos"
+          }
+        },
+        {
+          "key": "body_battery",
+          "type": "number",
+          "label": {
+            "en": "Body Battery",
+            "fr": "Body Battery",
+            "de": "Body Battery",
+            "es": "Body Battery"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_daily_summary",
+      "label": {
+        "en": "Get the Garmin daily summary",
+        "fr": "Lire le résumé quotidien Garmin",
+        "de": "Garmin-Tageszusammenfassung lesen",
+        "es": "Leer el resumen diario de Garmin"
+      },
+      "description": {
+        "en": "Today’s values (steps, sleep, heart rate, Body Battery...) for the next actions.",
+        "fr": "Les valeurs du jour (pas, sommeil, fréquence cardiaque, Body Battery...) pour les actions suivantes.",
+        "de": "Die Werte des Tages (Schritte, Schlaf, Herzfrequenz, Body Battery...) für die nächsten Aktionen.",
+        "es": "Los valores del día (pasos, sueño, frecuencia cardíaca, Body Battery...) para las siguientes acciones."
+      },
+      "timeout_seconds": 60,
+      "fields": [
+        {
+          "key": "refresh",
+          "type": "boolean",
+          "label": {
+            "en": "Synchronize first",
+            "fr": "Synchroniser d'abord",
+            "de": "Zuerst synchronisieren",
+            "es": "Sincronizar primero"
+          },
+          "description": {
+            "en": "Read Garmin Connect now instead of using the last synchronization.",
+            "fr": "Interroge Garmin Connect maintenant au lieu d’utiliser la dernière synchronisation.",
+            "de": "Garmin Connect jetzt abfragen, statt die letzte Synchronisierung zu verwenden.",
+            "es": "Consulta Garmin Connect ahora en lugar de usar la última sincronización."
+          },
+          "default": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        },
+        {
+          "key": "steps",
+          "type": "number",
+          "label": {
+            "en": "Steps",
+            "fr": "Pas",
+            "de": "Schritte",
+            "es": "Pasos"
+          }
+        },
+        {
+          "key": "step_goal",
+          "type": "number",
+          "label": {
+            "en": "Step goal",
+            "fr": "Objectif de pas",
+            "de": "Schrittziel",
+            "es": "Objetivo de pasos"
+          }
+        },
+        {
+          "key": "distance_km",
+          "type": "number",
+          "label": {
+            "en": "Distance (km)",
+            "fr": "Distance (km)",
+            "de": "Distanz (km)",
+            "es": "Distancia (km)"
+          }
+        },
+        {
+          "key": "active_calories",
+          "type": "number",
+          "label": {
+            "en": "Active calories",
+            "fr": "Calories actives",
+            "de": "Aktive Kalorien",
+            "es": "Calorías activas"
+          }
+        },
+        {
+          "key": "floors",
+          "type": "number",
+          "label": {
+            "en": "Floors climbed",
+            "fr": "Étages montés",
+            "de": "Gestiegene Etagen",
+            "es": "Pisos subidos"
+          }
+        },
+        {
+          "key": "intensity_minutes",
+          "type": "number",
+          "label": {
+            "en": "Intensity minutes",
+            "fr": "Minutes d'intensité",
+            "de": "Intensitätsminuten",
+            "es": "Minutos de intensidad"
+          }
+        },
+        {
+          "key": "resting_heart_rate",
+          "type": "number",
+          "label": {
+            "en": "Resting heart rate",
+            "fr": "Fréquence cardiaque au repos",
+            "de": "Ruheherzfrequenz",
+            "es": "Frecuencia cardíaca en reposo"
+          }
+        },
+        {
+          "key": "stress_average",
+          "type": "number",
+          "label": {
+            "en": "Average stress",
+            "fr": "Stress moyen",
+            "de": "Durchschnittlicher Stress",
+            "es": "Estrés medio"
+          }
+        },
+        {
+          "key": "body_battery",
+          "type": "number",
+          "label": {
+            "en": "Body Battery",
+            "fr": "Body Battery",
+            "de": "Body Battery",
+            "es": "Body Battery"
+          }
+        },
+        {
+          "key": "sleep_hours",
+          "type": "number",
+          "label": {
+            "en": "Sleep duration (h)",
+            "fr": "Durée de sommeil (h)",
+            "de": "Schlafdauer (h)",
+            "es": "Duración del sueño (h)"
+          }
+        },
+        {
+          "key": "sleep_score",
+          "type": "number",
+          "label": {
+            "en": "Sleep score",
+            "fr": "Score de sommeil",
+            "de": "Schlafwert",
+            "es": "Puntuación del sueño"
+          }
+        },
+        {
+          "key": "hrv",
+          "type": "number",
+          "label": {
+            "en": "HRV (ms)",
+            "fr": "VFC (ms)",
+            "de": "HFV (ms)",
+            "es": "VFC (ms)"
+          }
+        },
+        {
+          "key": "training_readiness",
+          "type": "number",
+          "label": {
+            "en": "Training readiness",
+            "fr": "Disposition à l'entraînement",
+            "de": "Trainingsbereitschaft",
+            "es": "Preparación para entrenar"
+          }
+        },
+        {
+          "key": "weight_kg",
+          "type": "number",
+          "label": {
+            "en": "Weight (kg)",
+            "fr": "Poids (kg)",
+            "de": "Gewicht (kg)",
+            "es": "Peso (kg)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_last_activity",
+      "label": {
+        "en": "Get the last Garmin activity",
+        "fr": "Lire la dernière activité Garmin",
+        "de": "Letzte Garmin-Aktivität lesen",
+        "es": "Leer la última actividad de Garmin"
+      },
+      "description": {
+        "en": "The most recent activity of the account, for the next actions.",
+        "fr": "L’activité la plus récente du compte, pour les actions suivantes.",
+        "de": "Die neueste Aktivität des Kontos, für die nächsten Aktionen.",
+        "es": "La actividad más reciente de la cuenta, para las siguientes acciones."
+      },
+      "timeout_seconds": 60,
+      "fields": [
+        {
+          "key": "refresh",
+          "type": "boolean",
+          "label": {
+            "en": "Synchronize first",
+            "fr": "Synchroniser d'abord",
+            "de": "Zuerst synchronisieren",
+            "es": "Sincronizar primero"
+          },
+          "description": {
+            "en": "Read Garmin Connect now instead of using the last synchronization.",
+            "fr": "Interroge Garmin Connect maintenant au lieu d’utiliser la dernière synchronisation.",
+            "de": "Garmin Connect jetzt abfragen, statt die letzte Synchronisierung zu verwenden.",
+            "es": "Consulta Garmin Connect ahora en lugar de usar la última sincronización."
+          },
+          "default": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "found",
+          "type": "boolean",
+          "label": {
+            "en": "Activity found",
+            "fr": "Activité trouvée",
+            "de": "Aktivität gefunden",
+            "es": "Actividad encontrada"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Name",
+            "fr": "Nom",
+            "de": "Name",
+            "es": "Nombre"
+          }
+        },
+        {
+          "key": "type",
+          "type": "string",
+          "label": {
+            "en": "Type",
+            "fr": "Type",
+            "de": "Typ",
+            "es": "Tipo"
+          }
+        },
+        {
+          "key": "start_time",
+          "type": "string",
+          "label": {
+            "en": "Start time",
+            "fr": "Heure de début",
+            "de": "Startzeit",
+            "es": "Hora de inicio"
+          }
+        },
+        {
+          "key": "distance_km",
+          "type": "number",
+          "label": {
+            "en": "Distance (km)",
+            "fr": "Distance (km)",
+            "de": "Distanz (km)",
+            "es": "Distancia (km)"
+          }
+        },
+        {
+          "key": "duration_minutes",
+          "type": "number",
+          "label": {
+            "en": "Duration (min)",
+            "fr": "Durée (min)",
+            "de": "Dauer (min)",
+            "es": "Duración (min)"
+          }
+        },
+        {
+          "key": "calories",
+          "type": "number",
+          "label": {
+            "en": "Calories",
+            "fr": "Calories",
+            "de": "Kalorien",
+            "es": "Calorías"
+          }
+        },
+        {
+          "key": "average_hr",
+          "type": "number",
+          "label": {
+            "en": "Average heart rate",
+            "fr": "Fréquence cardiaque moyenne",
+            "de": "Durchschnittliche Herzfrequenz",
+            "es": "Frecuencia cardíaca media"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "daily_summary",
+      "label": {
+        "en": "Garmin daily summary",
+        "fr": "Résumé quotidien Garmin",
+        "de": "Garmin-Tageszusammenfassung",
+        "es": "Resumen diario de Garmin"
+      },
+      "description": {
+        "en": "Steps, Body Battery, resting heart rate, sleep, stress and distance of the day.",
+        "fr": "Pas, Body Battery, fréquence cardiaque au repos, sommeil, stress et distance du jour.",
+        "de": "Schritte, Body Battery, Ruheherzfrequenz, Schlaf, Stress und Distanz des Tages.",
+        "es": "Pasos, Body Battery, frecuencia cardíaca en reposo, sueño, estrés y distancia del día."
+      },
+      "icon": "activity",
+      "action_timeout_seconds": 60
+    },
+    {
+      "key": "recent_activities",
+      "label": {
+        "en": "Garmin activities",
+        "fr": "Activités Garmin",
+        "de": "Garmin-Aktivitäten",
+        "es": "Actividades Garmin"
+      },
+      "description": {
+        "en": "Your latest activities, with their details and a link to Garmin Connect.",
+        "fr": "Vos dernières activités, avec leur détail et un lien vers Garmin Connect.",
+        "de": "Ihre letzten Aktivitäten mit Details und einem Link zu Garmin Connect.",
+        "es": "Sus últimas actividades, con su detalle y un enlace a Garmin Connect."
+      },
+      "icon": "award",
+      "settings": [
+        {
+          "key": "count",
+          "type": "select",
+          "label": {
+            "en": "Number of activities",
+            "fr": "Nombre d'activités",
+            "de": "Anzahl der Aktivitäten",
+            "es": "Número de actividades"
+          },
+          "required": false,
+          "default": "5",
+          "options": [
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "8",
+              "label": {
+                "en": "8",
+                "fr": "8",
+                "de": "8",
+                "es": "8"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "health_trend",
+      "label": {
+        "en": "Garmin health trend",
+        "fr": "Tendance santé Garmin",
+        "de": "Garmin-Gesundheitstrend",
+        "es": "Tendencia de salud Garmin"
+      },
+      "description": {
+        "en": "The history of one Garmin metric (steps, heart rate, sleep, weight...).",
+        "fr": "L'historique d'une mesure Garmin (pas, fréquence cardiaque, sommeil, poids...).",
+        "de": "Der Verlauf eines Garmin-Messwerts (Schritte, Herzfrequenz, Schlaf, Gewicht...).",
+        "es": "El historial de una medida Garmin (pasos, frecuencia cardíaca, sueño, peso...)."
+      },
+      "icon": "trending-up",
+      "settings": [
+        {
+          "key": "metric",
+          "type": "select",
+          "label": {
+            "en": "Metric",
+            "fr": "Mesure",
+            "de": "Messwert",
+            "es": "Medida"
+          },
+          "required": false,
+          "default": "steps",
+          "options": [
+            {
+              "value": "steps",
+              "label": {
+                "en": "Steps",
+                "fr": "Pas",
+                "de": "Schritte",
+                "es": "Pasos"
+              }
+            },
+            {
+              "value": "resting_heart_rate",
+              "label": {
+                "en": "Resting heart rate",
+                "fr": "Fréquence cardiaque au repos",
+                "de": "Ruheherzfrequenz",
+                "es": "Frecuencia cardíaca en reposo"
+              }
+            },
+            {
+              "value": "body_battery",
+              "label": {
+                "en": "Body Battery",
+                "fr": "Body Battery",
+                "de": "Body Battery",
+                "es": "Body Battery"
+              }
+            },
+            {
+              "value": "stress_average",
+              "label": {
+                "en": "Average stress",
+                "fr": "Stress moyen",
+                "de": "Durchschnittlicher Stress",
+                "es": "Estrés medio"
+              }
+            },
+            {
+              "value": "sleep_hours",
+              "label": {
+                "en": "Sleep duration",
+                "fr": "Durée de sommeil",
+                "de": "Schlafdauer",
+                "es": "Duración del sueño"
+              }
+            },
+            {
+              "value": "sleep_score",
+              "label": {
+                "en": "Sleep score",
+                "fr": "Score de sommeil",
+                "de": "Schlafwert",
+                "es": "Puntuación del sueño"
+              }
+            },
+            {
+              "value": "hrv",
+              "label": {
+                "en": "HRV",
+                "fr": "VFC",
+                "de": "HFV",
+                "es": "VFC"
+              }
+            },
+            {
+              "value": "weight_kg",
+              "label": {
+                "en": "Weight",
+                "fr": "Poids",
+                "de": "Gewicht",
+                "es": "Peso"
+              }
+            }
+          ]
+        },
+        {
+          "key": "period",
+          "type": "select",
+          "label": {
+            "en": "Period",
+            "fr": "Période",
+            "de": "Zeitraum",
+            "es": "Periodo"
+          },
+          "required": false,
+          "default": "last-month",
+          "options": [
+            {
+              "value": "last-week",
+              "label": {
+                "en": "Last 7 days",
+                "fr": "7 derniers jours",
+                "de": "Letzte 7 Tage",
+                "es": "Últimos 7 días"
+              }
+            },
+            {
+              "value": "last-month",
+              "label": {
+                "en": "Last month",
+                "fr": "Dernier mois",
+                "de": "Letzter Monat",
+                "es": "Último mes"
+              }
+            },
+            {
+              "value": "last-three-months",
+              "label": {
+                "en": "Last 3 months",
+                "fr": "3 derniers mois",
+                "de": "Letzte 3 Monate",
+                "es": "Últimos 3 meses"
+              }
+            },
+            {
+              "value": "last-year",
+              "label": {
+                "en": "Last year",
+                "fr": "Dernière année",
+                "de": "Letztes Jahr",
+                "es": "Último año"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
