@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-15
+
 ### Added
 
 - Garmin Connect sign-in with your email and password, two-step verification
@@ -33,4 +35,5 @@ the notes of the version's GitHub Release.
   out.
 - English, French, German and Spanish texts and documentation.
 
-[Unreleased]: https://github.com/gboulvin/Gladys-GarminConnect/commits/main
+[Unreleased]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/gboulvin/Gladys-GarminConnect/releases/tag/v1.0.0
