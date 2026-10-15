@@ -8,8 +8,8 @@
     "de": "Garmin-Uhren, -Waagen und Gesundheitsdaten (Schritte, Schlaf, Body Battery) in Gladys.",
     "es": "Relojes, básculas y datos de salud Garmin (pasos, sueño, Body Battery) en Gladys."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/gboulvin/gladys-garminconnect:1.0.0",
+  "version": "2.0.0",
+  "docker_image": "ghcr.io/gboulvin/gladys-garminconnect:2.0.0",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/gboulvin/Gladys-GarminConnect/main/cover.png",
   "categories": ["services", "environment"],
