@@ -1,6 +1,6 @@
 {
   "name": "gladys-garminconnect",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Garmin Connect external integration for Gladys Assistant: watches, scales and health data from your Garmin account.",
   "type": "module",
