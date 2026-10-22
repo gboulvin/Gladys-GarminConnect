@@ -10,6 +10,11 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Security
+
+- The image is rebuilt on the latest `node:24-alpine` (Node.js and Alpine
+  security patches); development tools and CI actions up to date.
+
 ## [2.0.0] - 2026-10-15
 
 ## [1.0.0] - 2026-10-15
