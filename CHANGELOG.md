@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-10-22
+
 ### Security
 
 - The image is rebuilt on the latest `node:24-alpine` (Node.js and Alpine
@@ -42,6 +44,7 @@ the notes of the version's GitHub Release.
   out.
 - English, French, German and Spanish texts and documentation.
 
-[Unreleased]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/gboulvin/Gladys-GarminConnect/releases/tag/v1.0.0
