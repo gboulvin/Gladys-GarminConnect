@@ -10,6 +10,12 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Requires Gladys 5.3.0 or later: the manifest declares search keywords for
+  the new catalog of Gladys 5.3. Listed under the **Leisure, sport & games** and **Services** catalog categories.
+- Integration SDK 0.16.
+
 ## [2.0.1] - 2026-10-22
 
 ### Security
