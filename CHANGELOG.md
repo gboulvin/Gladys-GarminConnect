@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-26
+
 ### Changed
 
 - Requires Gladys 5.3.0 or later: the manifest declares search keywords for
@@ -50,7 +52,8 @@ the notes of the version's GitHub Release.
   out.
 - English, French, German and Spanish texts and documentation.
 
-[Unreleased]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/gboulvin/Gladys-GarminConnect/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/gboulvin/Gladys-GarminConnect/releases/tag/v1.0.0
