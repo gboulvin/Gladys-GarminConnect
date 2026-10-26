@@ -1,7 +1,7 @@
 # Garmin Connect for Gladys Assistant
 
 An **external integration** for [Gladys Assistant](https://gladysassistant.com)
-(5.1 or later) that brings your **Garmin Connect** account into your home
+(5.3 or later) that brings your **Garmin Connect** account into your home
 automation: Garmin watches, bike computers and Index scales, the health values
 of the day, your activities, scene triggers and actions, and dashboard widgets.
 
